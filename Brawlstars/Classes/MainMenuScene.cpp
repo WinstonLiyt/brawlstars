@@ -22,25 +22,26 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "HelloWorldScene.h"
+#include "MainMenuScene.h"
+#include "SettingsScene.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
-Scene* HelloWorld::createScene()
+Scene* MainMenu::createScene()
 {
-    return HelloWorld::create();
+    return MainMenu::create();
 }
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
     printf("Error while loading: %s\n", filename);
-    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+    printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in MainMenuScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool MainMenu::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -49,77 +50,97 @@ bool HelloWorld::init()
         return false;
     }
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    auto VisibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 Origin = Director::getInstance()->getVisibleOrigin();
 
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
 
     // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
+    auto CloseItem = MenuItemImage::create(
                                            "CloseNormal.png",
                                            "CloseSelected.png",
-                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+                                           CC_CALLBACK_1(MainMenu::menuCloseCallback, this));
 
-    if (closeItem == nullptr ||
-        closeItem->getContentSize().width <= 0 ||
-        closeItem->getContentSize().height <= 0)
+    if (CloseItem == nullptr ||
+        CloseItem->getContentSize().width <= 0 ||
+        CloseItem->getContentSize().height <= 0)
     {
         problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
     }
     else
     {
-        float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
-        float y = origin.y + closeItem->getContentSize().height/2;
-        closeItem->setPosition(Vec2(x,y));
+        float x = Origin.x + VisibleSize.width - CloseItem->getContentSize().width/2;
+        float y = Origin.y + CloseItem->getContentSize().height/2;
+        CloseItem->setPosition(Vec2(x,y));
     }
 
     // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Vec2::ZERO);
-    this->addChild(menu, 1);
+    auto CloseMenu = Menu::create(CloseItem, NULL);
+    CloseMenu->setPosition(Vec2::ZERO);
+    this->addChild(CloseMenu, 1);
 
     /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-
-    auto label = Label::createWithTTF("Brawlstars", "fonts/Marker Felt.ttf", 40);
-    if (label == nullptr)
+    
+    //创建游戏名标题
+    auto GameNameLabel = Label::createWithTTF("Brawlstars", "fonts/Marker Felt.ttf", 40);
+    if (GameNameLabel == nullptr)
     {
         problemLoading("'fonts/Marker Felt.ttf'");
     }
     else
     {
         // position the label on the center of the screen
-        label->setPosition(Vec2(origin.x + visibleSize.width/2,
-                                origin.y + visibleSize.height - label->getContentSize().height));
+        GameNameLabel->setPosition(Vec2(Origin.x + VisibleSize.width/2,
+                                Origin.y + VisibleSize.height - GameNameLabel->getContentSize().height));
 
         // add the label as a child to this layer
-        this->addChild(label, 1);
+        this->addChild(GameNameLabel, 1);
     }
+    ////
 
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
-    if (sprite == nullptr)
+    /*
+    * 以下无法显示 原因未知
+    */
+
+    // add "test" splash screen"
+    auto BackgroundPictrue = Sprite::create("PicTest.png");
+    if (BackgroundPictrue == nullptr)
     {
-        problemLoading("'HelloWorld.png'");
+        problemLoading("'PicTest.png'");
     }
     else
     {
         // position the sprite on the center of the screen
-        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+        BackgroundPictrue->setPosition(Vec2(VisibleSize.width / 2 + Origin.x, VisibleSize.height / 2 + Origin.y));
 
         // add the sprite as a child to this layer
-        this->addChild(sprite, 0);
+        this->addChild(BackgroundPictrue, 0);
     }
+
+    //创建主菜单选项
+    MenuItemFont::setFontName("Times New Romam");
+    MenuItemFont::setFontSize(40);
+
+    MenuItemFont* itemStart = MenuItemFont::create("Start",
+        CC_CALLBACK_1(MainMenu::menuStartCallback, this));
+    MenuItemFont* itemSettings = MenuItemFont::create("Settings",
+        CC_CALLBACK_1(MainMenu::menuSettingsCallback, this));
+
+    Menu* MainMenu = Menu::create(itemStart, itemSettings, NULL);
+    MainMenu->setPosition(VisibleSize.width / 2 + Origin.x,
+        Origin.y + MainMenu->getContentSize().height / 2);
+    MainMenu->alignItemsVertically();
+
+    this->addChild(MainMenu);
+    ////
+
     return true;
 }
 
 
-void HelloWorld::menuCloseCallback(Ref* pSender)
+void MainMenu::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
     Director::getInstance()->end();
@@ -128,6 +149,20 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 
     //EventCustom customEndEvent("game_scene_close_event");
     //_eventDispatcher->dispatchEvent(&customEndEvent);
+}
 
+void MainMenu::menuStartCallback(Ref* pSender)
+{
+    //待完成
+    Director::getInstance()->end();
 
+}
+
+void MainMenu::menuSettingsCallback(Ref* pSender)
+{
+    //创建设置场景
+    auto SettingsScene = Settings::createScene();
+
+    //切换设置场景
+    Director::getInstance()->pushScene(SettingsScene);
 }

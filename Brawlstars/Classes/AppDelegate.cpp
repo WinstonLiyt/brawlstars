@@ -23,6 +23,7 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
+#include "MainMenuScene.h"
 #include "HelloWorldScene.h"
 
 // #define USE_AUDIO_ENGINE 1
@@ -87,6 +88,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #else
         glview = GLViewImpl::create("Brawlstars");
 #endif
+        glview->setFrameSize(960, 720);
         director->setOpenGLView(glview);
     }
 
@@ -118,7 +120,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = HelloWorld::createScene();
+    auto scene = MainMenu::createScene();
 
     // run
     director->runWithScene(scene);
